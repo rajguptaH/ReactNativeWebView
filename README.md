@@ -16,7 +16,9 @@ To Change The WebView Uri Source go to /App.tsx-> Look For **WebView** Componene
   );
 }
 ```
-If You want To Run The Project Then Make Sure You have installed Android Emulator or You have connected your device with Debugging mode 
+# Question And Answer
+## Question 1 :- How to Run React Native Project
+If You want To Run The Project Then Make Sure You have installed Android Emulator or You have connected your device with Debugging mode and android sdk 
 and then just run these commands 
 ```cmd
 npm start
@@ -52,5 +54,19 @@ a - run on Android
 a
 ```
 And That's It 
+## Question 2 :- How to Build Apk From react native project 
+Answer :- To Build Apk You need to generate apk from Terminal Like below i have written
+Place your terminal directory to android using:
+```cmd
+cd android
+```
+Then execute this command Sometimes you have to use with ./gradlew
+```cmd
+gradlew assembleRelease
+```
+As a result, the APK creation process is done. You can find the generated APK at android/app/build/outputs/apk/app-release.apk or android/app/build/outputs/apk/debug-release/app.apk This is the actual app, which you can send to your phone or upload to the Google Play Store.
+
+**Congratulations, you’ve just generated a React Native Release Build APK for Android.**
+
 # Feel Free To Suggest Mistakes or Propose New Ideas You Can Reach Out To Me Using Instagram [Raj_rr](https://instagram.com/raj__rr)
 Thanks [React Native](https://facebook.com)
