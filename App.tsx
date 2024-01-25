@@ -1,82 +1,103 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState, useEffect } from 'react';
+import { Alert, SafeAreaView, StatusBar, StyleSheet, View, Button, TextInput, Text } from 'react-native';
+import { WebView } from 'react-native-webview';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Modal from 'react-native-modal';
 
-import React from 'react';
-import Web from './Web';
-import { WebView  } from 'react-native-webview';
+const App = () => {
+  const [url, setUrl] = useState('');
+  const [isModalVisible, setModalVisible] = useState(false);
 
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+  useEffect(() => {
+    checkIfPromptShown();
+    loadUrlFromStorage();
+  }, []);
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  const checkIfPromptShown = async () => {
+    try {
+      const promptShown = await AsyncStorage.getItem('promptShown');
+      if (!promptShown) {
+        setModalVisible(true);
+      }
+    } catch (e) {
+      console.error('Error checking if prompt has been shown:', e);
+    }
+  };
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  const promptForUrl = (newUrl: string) => {
+    if (newUrl) {
+      setUrl(newUrl);
+      saveUrlToStorage(newUrl);
+      markPromptAsShown();
+    }
+    setModalVisible(false);
+  };
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-     
-    </View>
-  );
-}
+  const saveUrlToStorage = async (newUrl: string) => {
+    try {
+      await AsyncStorage.setItem('savedUrl', newUrl);
+    } catch (e) {
+      console.error('Error saving URL to AsyncStorage:', e);
+    }
+  };
 
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const loadUrlFromStorage = async () => {
+    try {
+      const savedUrl = await AsyncStorage.getItem('savedUrl');
+      if (savedUrl) {
+        setUrl(savedUrl);
+      }
+    } catch (e) {
+      console.error('Error loading URL from AsyncStorage:', e);
+    }
+  };
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const markPromptAsShown = async () => {
+    try {
+      await AsyncStorage.setItem('promptShown', 'true');
+    } catch (e) {
+      console.error('Error marking prompt as shown:', e);
+    }
   };
 
   return (
-    <SafeAreaView style={{ height: 780 }} >
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <WebView  source={{ uri: 'http://instagram.com/raj__rr/' }}
-      />
-      
+    <SafeAreaView style={{ flex: 1 }}>
+      <StatusBar barStyle="dark-content" />
+      <View style={{ flex: 1 }}>
+        <WebView source={{ uri: url }} />
+        <Button title="Change URL" onPress={() => setModalVisible(true)} />
+        <Modal
+          isVisible={isModalVisible}
+          onBackdropPress={() => setModalVisible(false)}
+          backdropOpacity={0.5}
+        >
+          <View style={styles.modalContainer}>
+            <Text>Please enter the URL:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter URL"
+              onChangeText={(text) => setUrl(text)}
+            />
+            <Button title="Save URL" onPress={() => promptForUrl(url)} />
+          </View>
+        </Modal>
+      </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  modalContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
   },
 });
 
