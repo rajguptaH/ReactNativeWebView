@@ -75,7 +75,7 @@ const App = () => {
             <Text>Please enter the URL:</Text>
             <TextInput
               style={styles.input}
-              placeholder="Enter URL"
+              placeholder="Please Enter App URL"
               onChangeText={(text) => setUrl(text)}
             />
             <Button title="Save URL" onPress={() => promptForUrl(url)} />
